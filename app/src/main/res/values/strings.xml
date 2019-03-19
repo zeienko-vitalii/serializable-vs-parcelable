@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">SerializableVsParcelable</string>
+    <string name="result_time">Result time $1%d</string>
+    <string name="elements_count">Elements count</string>
+    <string name="hello_world">Submit</string>
 </resources>
