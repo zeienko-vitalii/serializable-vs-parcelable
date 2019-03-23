@@ -1,4 +1,4 @@
-package com.zeenko.serializablevsparcelable.models;
+package com.zeenko.serializablevsparcelable.models.complex;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -20,10 +20,10 @@ public class MyParcelableClass implements Parcelable {
             return new MyParcelableClass[size];
         }
     };
-    private String stringData = "";
-    private int identy = 0;
-    private boolean isActive = false;
-    private float dest = 0.0f;
+    private String stringData;
+    private int identity;
+    private boolean isActive;
+    private float dest;
     private List<String> stringList;
 
     public MyParcelableClass() {
@@ -37,7 +37,7 @@ public class MyParcelableClass implements Parcelable {
             stringList.add(UUID.randomUUID().toString());
         }
 
-        identy = rand.nextInt();
+        identity = rand.nextInt();
         isActive = rand.nextBoolean();
         dest = rand.nextFloat();
 
@@ -45,7 +45,7 @@ public class MyParcelableClass implements Parcelable {
 
     protected MyParcelableClass(Parcel in) {
         stringData = in.readString();
-        identy = in.readInt();
+        identity = in.readInt();
         isActive = in.readByte() != 0;
         dest = in.readFloat();
         stringList = in.createStringArrayList();
@@ -54,7 +54,7 @@ public class MyParcelableClass implements Parcelable {
     @Override
     public void writeToParcel(Parcel destParcel, int flags) {
         destParcel.writeString(stringData);
-        destParcel.writeInt(identy);
+        destParcel.writeInt(identity);
         destParcel.writeByte((byte) (isActive ? 1 : 0));
         destParcel.writeFloat(dest);
         destParcel.writeStringList(stringList);
@@ -63,5 +63,16 @@ public class MyParcelableClass implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "MyParcelableClass{" +
+                "stringData='" + stringData + '\'' +
+                ", identity=" + identity +
+                ", isActive=" + isActive +
+                ", dest=" + dest +
+                ", stringList=" + stringList +
+                '}';
     }
 }

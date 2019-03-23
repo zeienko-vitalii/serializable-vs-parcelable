@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MainActivity1">
+
+    <LinearLayout
+        android:id="@+id/btnContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/testParcelable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Parcelable" />
+
+        <Button
+            android:id="@+id/testSerializable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Serializable" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pbProgressWrite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnContainer"
+        android:padding="8dp"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+
+  <ProgressBar
+        android:id="@+id/pbProgressRead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pbProgressWrite"
+        android:padding="8dp"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/pbProgressRead"
+        android:fillViewport="true"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:id="@+id/results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+</RelativeLayout>
