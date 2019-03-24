@@ -72,27 +72,27 @@ public class FirstActivity extends AppCompatActivity {
 
     private void startSecondActivityWithArray() {
         ExtraKeysGeneratorUtility extraKeysGeneratorUtility = new ExtraKeysGeneratorUtility();
-        ArrayList<Parcelable> list1 = (ArrayList<Parcelable>) getParcelableArray();
-        List<Serializable> list2 = getSerializableArray();
+        ArrayList<Parcelable> parcelables = (ArrayList<Parcelable>) getParcelableArray();
+        List<Serializable> serializables = getSerializableArray();
 
         TimeUtility timeUtility = new TimeUtility();
         Intent intent = new Intent(this, SecondActivity.class);
         StringBuilder stringBuilder = new StringBuilder();
 
         timeUtility.start();
-        intent.putParcelableArrayListExtra(PARCELABLE_EXTRA, list1);
+//        intent.putParcelableArrayListExtra(PARCELABLE_EXTRA, parcelables);
         timeUtility.end();
 
         stringBuilder.append("Write Parcelable: ")
                 .append(timeUtility.getResult())
                 .append(" ns. Size: ")
-                .append(list1.size())
+                .append(parcelables.size())
                 .append("\n");
 
         int index = 0;
         timeUtility.start();
         for (String key : extraKeysGeneratorUtility.getSerializableKeys()) {
-            intent.putExtra(key, list2.get(index));
+            intent.putExtra(key, serializables.get(index));
             index++;
         }
         timeUtility.end();
@@ -100,7 +100,7 @@ public class FirstActivity extends AppCompatActivity {
         stringBuilder.append("Write Serializable: ")
                 .append(timeUtility.getResult())
                 .append(" ns. Size: ")
-                .append(list2.size())
+                .append(serializables.size())
                 .append("\n");
 
         intent.putExtra(TIME_EXTRA, stringBuilder.toString());
@@ -108,7 +108,7 @@ public class FirstActivity extends AppCompatActivity {
     }
 
     private List<Parcelable> getParcelableArray() {
-        List<Parcelable> data = new ArrayList<>();
+        List<Parcelable> data = new ArrayList<>(ExtraKeysGeneratorUtility.SIZE*2);
         for (int i = 0; i < ExtraKeysGeneratorUtility.SIZE; i++) {
             data.add(new MyParcelableClass());
         }
@@ -116,7 +116,7 @@ public class FirstActivity extends AppCompatActivity {
     }
 
     private List<Serializable> getSerializableArray() {
-        List<Serializable> data = new ArrayList<>();
+        List<Serializable> data = new ArrayList<>(ExtraKeysGeneratorUtility.SIZE*2);
         for (int i = 0; i < ExtraKeysGeneratorUtility.SIZE; i++) {
             data.add(new MySerializableClass());
         }

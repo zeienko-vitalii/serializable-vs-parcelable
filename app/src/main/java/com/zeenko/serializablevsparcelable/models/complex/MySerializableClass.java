@@ -20,45 +20,44 @@ public class MySerializableClass implements Serializable {
 
     public MySerializableClass() {
         stringData = UUID.randomUUID().toString();
-        stringList = new ArrayList<>();
+        stringList = new ArrayList<>(32);
         Random rand = new Random();
-        int maxI = rand.nextInt();
-        for (int i = 0; i < maxI % 15; i++) {
-            stringList.add(UUID.randomUUID().toString());
+        for (int i = 0; i < 32; i++) {
+            stringList.add("duck");
         }
         identity = rand.nextInt();
         isActive = rand.nextBoolean();
         dest = rand.nextFloat();
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeUTF(stringData);
-        out.writeInt(identity);
-        out.writeBoolean(isActive);
-        out.writeFloat(dest);
-        if (stringList != null) {
-            out.writeInt(stringList.size());
-            for (String child : stringList) {
-                out.writeUTF(child);
-            }
-        } else {
-            out.writeInt(0);
-        }
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        stringData = in.readUTF();
-        identity = in.readInt();
-        isActive = in.readBoolean();
-        dest = in.readFloat();
-        int childCount = in.readInt();
-        if (childCount > 0) {
-            stringList = new ArrayList<>(childCount);
-            for (int i = 0; i < childCount; i++) {
-                stringList.add(in.readUTF());
-            }
-        }
-    }
+//    private void writeObject(ObjectOutputStream out) throws IOException {
+//        out.writeUTF(stringData);
+//        out.writeInt(identity);
+//        out.writeBoolean(isActive);
+//        out.writeFloat(dest);
+//        if (stringList != null) {
+//            out.writeInt(stringList.size());
+//            for (String child : stringList) {
+//                out.writeUTF(child);
+//            }
+//        } else {
+//            out.writeInt(0);
+//        }
+//    }
+//
+//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//        stringData = in.readUTF();
+//        identity = in.readInt();
+//        isActive = in.readBoolean();
+//        dest = in.readFloat();
+//        int childCount = in.readInt();
+//        if (childCount > 0) {
+//            stringList = new ArrayList<>(childCount);
+//            for (int i = 0; i < childCount; i++) {
+//                stringList.add(in.readUTF());
+//            }
+//        }
+//    }
 
     @Override
     public String toString() {

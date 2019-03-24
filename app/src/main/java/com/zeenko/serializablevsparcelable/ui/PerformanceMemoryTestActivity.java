@@ -21,10 +21,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-public class MainActivity1 extends AppCompatActivity {
+public class PerformanceMemoryTestActivity extends AppCompatActivity {
     private static final String PARCELABLE_EXTRA = "PARCELABLE_EXTRA";
     private static final String SERIALIZABLE_EXTRA = "SERIALIZABLE_EXTRA";
-    private final int SIZE = 50;
+    private final int SIZE = 1;
     private LinearLayout results;
     private ScrollView scroll;
     private TimeUtility timeUtility = new TimeUtility();
@@ -34,25 +34,19 @@ public class MainActivity1 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_1);
+        setContentView(R.layout.performance_memory_test_activity);
         results = findViewById(R.id.results);
         scroll = findViewById(R.id.scroll);
         Button btnParcelable = findViewById(R.id.testParcelable);
         Button btnSerializable = findViewById(R.id.testSerializable);
-        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelableWithParcel(view)).start());
-        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializableWithParcel(view)).start());
+//        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelableWithParcel(view)).start());
+        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelable(view)).start());
+//        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializableWithParcel(view)).start());
+        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializable(view)).start());
         progressBarWrite = findViewById(R.id.pbProgressWrite);
         progressBarRead = findViewById(R.id.pbProgressRead);
         progressBarWrite.setMax(SIZE);
         progressBarRead.setMax(SIZE);
-    }
-
-    private void updateProgressBarWrite(int value) {
-        progressBarWrite.post(() -> progressBarWrite.setProgress(value));
-    }
-
-    private void updateProgressBarRead(int value) {
-        progressBarRead.post(() -> progressBarRead.setProgress(value));
     }
 
     public void testParcelable(View view) {
@@ -70,10 +64,9 @@ public class MainActivity1 extends AppCompatActivity {
         int length = parcel.dataSize();
         parcel.setDataPosition(0); // reset for reading
         TreeNode restored = null;
-        Parcel parcel1 = Parcel.obtain();
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
-            restored = TreeNode.CREATOR.createFromParcel(parcel1);
+            restored = TreeNode.CREATOR.createFromParcel(parcel);
             updateProgressBarRead(i + 1);
         }
         timeUtility.end();
@@ -83,8 +76,50 @@ public class MainActivity1 extends AppCompatActivity {
         Logger.logD(null, "Origin:\n" + root.toString());
         Logger.logD(null, "Restored:\n" + restored.toString());
         parcel.recycle();
-        parcel1.recycle();
     }
+
+
+    public void testSerializable(View view) {
+        TreeNode root = createNode(0);
+        byte[] byteArray = new byte[0];
+
+        try (ByteArrayOutputStream bas = new ByteArrayOutputStream(1_000_000);
+             ObjectOutputStream out = new ObjectOutputStream(bas)) {
+            timeUtility.start();
+            for (int i = 0; i < SIZE; i++) {
+                out.writeObject(root);
+                updateProgressBarWrite(i + 1);
+            }
+            timeUtility.end();
+            byteArray = bas.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        int length = byteArray.length;
+        TreeNode restored = null;
+        long finish1 = timeUtility.getResultInMs();
+
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
+             ObjectInputStream in = new ObjectInputStream(bis)) {
+            timeUtility.start();
+            for (int i = 0; i < SIZE; i++) {
+                restored = (TreeNode) in.readObject();
+                updateProgressBarRead(i + 1);
+            }
+            timeUtility.end();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        addResult("serialize: " + finish1 + "ms; deserialize: "
+                + timeUtility.getResultInMs() + "ms; size: " + length);
+
+        Logger.logD(null, "Origin:\n" + root.toString());
+        Logger.logD(null, restored != null ? "Restored:\n" + restored.toString() : "restored is null");
+
+    }
+
 
     public void testParcelableWithParcel(View view) {
         TreeNode root = createNode(0);
@@ -187,45 +222,6 @@ public class MainActivity1 extends AppCompatActivity {
 //        parcel1.recycle();
     }
 
-    public void testSerializable(View view) {
-        TreeNode root = createNode(0);
-        byte[] byteArray = new byte[0];
-
-        try (ByteArrayOutputStream bas = new ByteArrayOutputStream(1_000_000);
-             ObjectOutputStream out = new ObjectOutputStream(bas)) {
-            timeUtility.start();
-            for (int i = 0; i < SIZE; i++) {
-                out.writeObject(root);
-            }
-            timeUtility.end();
-            byteArray = bas.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        int length = byteArray.length;
-        TreeNode restored = null;
-        long finish1 = timeUtility.getResultInMs();
-
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
-             ObjectInputStream in = new ObjectInputStream(bis)) {
-            timeUtility.start();
-            for (int i = 0; i < SIZE; i++) {
-                restored = (TreeNode) in.readObject();
-            }
-            timeUtility.end();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        addResult("serialize: " + finish1 + "ms; deserialize: "
-                + timeUtility.getResultInMs() + "ms; size: " + length);
-
-        Logger.logD(null, "Origin:\n" + root.toString());
-        Logger.logD(null, restored != null ? "Restored:\n" + restored.toString() : "restored is null");
-
-    }
-
     public void testSerializableBundle(View view) {
         TreeNode root = createNode(0);
         Parcel parcel = Parcel.obtain();
@@ -245,7 +241,7 @@ public class MainActivity1 extends AppCompatActivity {
         parcel.setDataPosition(0); // reset for reading
         TreeNode restored = null;
 //        Parcel parcel1 = Parcel.obtain();
-        Bundle bundleRestored = null;
+        Bundle bundleRestored;
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
 //            bundle.readFromParcel(parcel1);
@@ -302,7 +298,15 @@ public class MainActivity1 extends AppCompatActivity {
         result.setText(message);
         result.setPadding(10, 10, 10, 10);
         results.post(() -> results.addView(result));
-//        results.addView(result);
         scroll.post(() -> scroll.scrollTo(0, scroll.getBottom()));
     }
+
+    private void updateProgressBarWrite(int value) {
+        progressBarWrite.post(() -> progressBarWrite.setProgress(value));
+    }
+
+    private void updateProgressBarRead(int value) {
+        progressBarRead.post(() -> progressBarRead.setProgress(value));
+    }
+
 }
