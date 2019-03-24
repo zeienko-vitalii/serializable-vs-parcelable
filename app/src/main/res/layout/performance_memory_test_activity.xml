@@ -4,16 +4,34 @@
     android:layout_height="match_parent"
     tools:context=".ui.PerformanceMemoryTestActivity">
 
+    <EditText
+        android:id="@+id/edSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="Size"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/edNodesNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edSize"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:hint="Nodes"
+        android:inputType="numberDecimal" />
+
     <LinearLayout
         android:id="@+id/btnContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/edNodesNumber"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="2dp">
 
         <Button
             android:id="@+id/testParcelable"
@@ -26,23 +44,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Test Serializable" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnContainer"
+        android:layout_centerHorizontal="true"
+        android:onClick="clear"
+        android:text="Clear" />
 
     <ProgressBar
         android:id="@+id/pbProgressWrite"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnContainer"
-        android:padding="8dp"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+        android:layout_below="@+id/clear" />
 
-  <ProgressBar
+    <ProgressBar
         android:id="@+id/pbProgressRead"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/pbProgressWrite"
-        android:padding="8dp"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+        android:layout_below="@+id/pbProgressWrite" />
 
     <ScrollView
         android:id="@+id/scroll"

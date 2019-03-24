@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -24,7 +25,8 @@ import java.util.ArrayList;
 public class PerformanceMemoryTestActivity extends AppCompatActivity {
     private static final String PARCELABLE_EXTRA = "PARCELABLE_EXTRA";
     private static final String SERIALIZABLE_EXTRA = "SERIALIZABLE_EXTRA";
-    private final int SIZE = 1;
+    private int SIZE = 1;
+    private int nodesDepth = 0;
     private LinearLayout results;
     private ScrollView scroll;
     private TimeUtility timeUtility = new TimeUtility();
@@ -39,18 +41,35 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         scroll = findViewById(R.id.scroll);
         Button btnParcelable = findViewById(R.id.testParcelable);
         Button btnSerializable = findViewById(R.id.testSerializable);
+        EditText edSize = findViewById(R.id.edSize);
+        EditText edNodes = findViewById(R.id.edNodesNumber);
 //        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelableWithParcel(view)).start());
-        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelable(view)).start());
+        btnParcelable.setOnClickListener((view) -> new Thread(() -> {
+            try {
+                SIZE = Integer.parseInt(edSize.getText().toString());
+                nodesDepth = Integer.parseInt(edNodes.getText().toString());
+            } catch (Exception e) {
+            }
+            testParcelable(view);
+        }).start());
 //        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializableWithParcel(view)).start());
-        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializable(view)).start());
+        btnSerializable.setOnClickListener((view) -> new Thread(() -> {
+            try {
+                SIZE = Integer.parseInt(edSize.getText().toString());
+                nodesDepth = Integer.parseInt(edNodes.getText().toString());
+            } catch (Exception e) {
+            }
+            testSerializable(view);
+        }).start());
         progressBarWrite = findViewById(R.id.pbProgressWrite);
         progressBarRead = findViewById(R.id.pbProgressRead);
         progressBarWrite.setMax(SIZE);
         progressBarRead.setMax(SIZE);
     }
 
+
     public void testParcelable(View view) {
-        TreeNode root = createNode(0);
+        TreeNode root = createNode(nodesDepth);
         Parcel parcel = Parcel.obtain();
 
         timeUtility.start();
@@ -80,7 +99,7 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
 
 
     public void testSerializable(View view) {
-        TreeNode root = createNode(0);
+        TreeNode root = createNode(nodesDepth);
         byte[] byteArray = new byte[0];
 
         try (ByteArrayOutputStream bas = new ByteArrayOutputStream(1_000_000);
@@ -291,6 +310,11 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         root.boolean1 = false;
         root.boolean2 = true;
         return root;
+    }
+
+    public void clear(View v) {
+        results.post(() -> results.removeAllViews());
+        scroll.post(() -> scroll.scrollTo(0, scroll.getBottom()));
     }
 
     private void addResult(String message) {

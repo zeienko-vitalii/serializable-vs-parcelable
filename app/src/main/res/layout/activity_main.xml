@@ -6,20 +6,27 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/tvOldTest"
+        android:id="@+id/btnOldTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1"/>
-    <Button
-        android:id="@+id/tvPerformanceMemoryTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2"/>
+        android:text="1" />
 
     <Button
-        android:id="@+id/tvTransferTest"
+        android:id="@+id/btnPerformanceMemoryTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="3"/>
+        android:text="2" />
+
+    <Button
+        android:id="@+id/btnTransferTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3" />
+
+    <Button
+        android:id="@+id/btnParcelableTestActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4" />
 
 </LinearLayout>

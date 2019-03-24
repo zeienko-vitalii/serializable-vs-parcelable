@@ -12,9 +12,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.tvOldTest).setOnClickListener((v) -> startTestActivity(OldTestActivity.class));
-        findViewById(R.id.tvPerformanceMemoryTest).setOnClickListener((v) -> startTestActivity(PerformanceMemoryTestActivity.class));
-        findViewById(R.id.tvTransferTest).setOnClickListener((v) -> startTestActivity(FirstActivity.class));
+        findViewById(R.id.btnOldTest).setOnClickListener((v) -> startTestActivity(OldTestActivity.class));
+        findViewById(R.id.btnPerformanceMemoryTest).setOnClickListener((v) -> startTestActivity(PerformanceMemoryTestActivity.class));
+        findViewById(R.id.btnTransferTest).setOnClickListener((v) -> startTestActivity(FirstActivity.class));
+        findViewById(R.id.btnParcelableTestActivity).setOnClickListener((v) -> startTestActivity(ParcelableTestActivity.class));
     }
 
     private void startTestActivity(Class<?> cls) {

@@ -32,6 +32,11 @@
         <activity
             android:name=".ui.PerformanceMemoryTestActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.ParcelableOtherTestActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ParcelableTestActivity"
+            android:screenOrientation="portrait"/>
+
         <!--<activity android:name=".ui.FirstActivity" />-->
 
         <service android:name=".ui.services.MyService" />
