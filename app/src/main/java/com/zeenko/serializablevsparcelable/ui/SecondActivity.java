@@ -27,7 +27,7 @@ public class SecondActivity extends AppCompatActivity {
         setContentView(R.layout.second_activity);
         textView = findViewById(R.id.tvResult);
         Intent intent = getIntent();
-        if (intent.getIntExtra("size", -1) != -1) {
+        if (intent.getBooleanExtra(FirstActivity.IS_ONE_EXTRA, false)) {
             getData();
         } else {
             getDataArray();
@@ -39,31 +39,29 @@ public class SecondActivity extends AppCompatActivity {
         TimeUtility timeUtility = new TimeUtility();
         Intent intent = getIntent();
         StringBuilder stringBuilder = new StringBuilder();
-        MySerializableClass class1;
-        MyParcelableClass class2;
+        MySerializableClass serializableClass;
+        MyParcelableClass parcelableClass;
         timeUtility.start();
-        class2 = intent.getParcelableExtra(FirstActivity.PARCELABLE_EXTRA);
+        parcelableClass = intent.getParcelableExtra(FirstActivity.PARCELABLE_EXTRA);
         timeUtility.end();
 
-        stringBuilder.append("Time Parcelable: ")
+        stringBuilder.append("Read Parcelable:  ")
                 .append(timeUtility.getResult())
                 .append(" ns. ")
-                .append(class2 != null ? "restored" : "restored is null")
+                .append(parcelableClass != null ? "restored" : "restored is null")
                 .append("\n");
 
         timeUtility.start();
-        class1 = (MySerializableClass) intent.getSerializableExtra(FirstActivity.SERIALIZABLE_EXTRA);
+        serializableClass = (MySerializableClass) intent.getSerializableExtra(FirstActivity.SERIALIZABLE_EXTRA);
         timeUtility.end();
 
-        stringBuilder.append("Time Serializable: ")
-                .append(timeUtility.getResultInMs())
-                .append(" ns\n" +
-                        "Data restored: ")
-                .append(class1 != null ? "restored" : "restored is null")
+        stringBuilder.append("Read Serializable: ")
+                .append(timeUtility.getResult())
+                .append(" ns. ")
+                .append(serializableClass != null ? "restored" : "restored is null")
                 .append("\n");
 
-        stringBuilder.append("\n")
-                .append(intent.getStringExtra("TIME"));
+        stringBuilder.insert(0, intent.getStringExtra(FirstActivity.TIME_EXTRA));
 
         textView.setText(stringBuilder.toString());
     }
@@ -89,8 +87,8 @@ public class SecondActivity extends AppCompatActivity {
 
         stringBuilder.append("Read Parcelable: ")
                 .append(timeUtility.getResult())
-                .append(" ms\n")
-                .append(!hasNullable ? "restored, size: " : "restored is null")
+                .append(" ns. ")
+                .append(!hasNullable ? "Size: " : "restored is null")
                 .append(!hasNullable ? parcelableClasses.size() : "")
                 .append("\n");
 
@@ -107,14 +105,14 @@ public class SecondActivity extends AppCompatActivity {
         }
         stringBuilder.append("Read Serializable: ")
                 .append(timeUtility.getResult())
-                .append(" ms\n")
-                .append(!hasNullable ? "restored, size: " : "restored is null")
+                .append(" ns. ")
+                .append(!hasNullable ? "Size: " : "restored is null")
                 .append(!hasNullable ? serializableClasses.size() : "")
                 .append("\n");
 
-        stringBuilder.append("\n")
-                .append(intent.getStringExtra("TIME"));
-
+//        stringBuilder.append("\n")
+//                .append(intent.getStringExtra(FirstActivity.TIME_EXTRA));
+        stringBuilder.insert(0, intent.getStringExtra(FirstActivity.TIME_EXTRA));
         textView.setText(stringBuilder.toString());
     }
 
