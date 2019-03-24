@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExtraKeysGeneratorUtility {
-    public final int SIZE = 100;
+    public static int SIZE = 300;
     private List<String> parcelableKeys = new ArrayList<>();
     private List<String> serializableKeys = new ArrayList<>();
 

@@ -5,16 +5,24 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <EditText
+        android:id="@+id/numberPicked"
+        android:layout_margin="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:autofillHints="300" />
+
     <Button
         android:id="@+id/btnStartSecondActivityWithParcelable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Parcelable" />
 
-    <Button
-        android:id="@+id/btnStartSecondActivityWithSerializable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Serializable" />
+    <!--<Button-->
+        <!--android:id="@+id/btnStartSecondActivityWithSerializable"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Serializable" />-->
 
 </LinearLayout>
