@@ -1,8 +1,6 @@
 package com.zeenko.serializablevsparcelable.ui;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -26,7 +24,7 @@ import java.util.ArrayList;
 public class MainActivity1 extends AppCompatActivity {
     private static final String PARCELABLE_EXTRA = "PARCELABLE_EXTRA";
     private static final String SERIALIZABLE_EXTRA = "SERIALIZABLE_EXTRA";
-    private final int SIZE = 1;
+    private final int SIZE = 50;
     private LinearLayout results;
     private ScrollView scroll;
     private TimeUtility timeUtility = new TimeUtility();
@@ -41,8 +39,8 @@ public class MainActivity1 extends AppCompatActivity {
         scroll = findViewById(R.id.scroll);
         Button btnParcelable = findViewById(R.id.testParcelable);
         Button btnSerializable = findViewById(R.id.testSerializable);
-        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelableBundle(view)).start());
-        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializableBundle(view)).start());
+        btnParcelable.setOnClickListener((view) -> new Thread(() -> testParcelableWithParcel(view)).start());
+        btnSerializable.setOnClickListener((view) -> new Thread(() -> testSerializableWithParcel(view)).start());
         progressBarWrite = findViewById(R.id.pbProgressWrite);
         progressBarRead = findViewById(R.id.pbProgressRead);
         progressBarWrite.setMax(SIZE);
@@ -54,7 +52,7 @@ public class MainActivity1 extends AppCompatActivity {
     }
 
     private void updateProgressBarRead(int value) {
-        progressBarRead.post(() -> progressBarWrite.setProgress(value));
+        progressBarRead.post(() -> progressBarRead.setProgress(value));
     }
 
     public void testParcelable(View view) {
@@ -64,7 +62,7 @@ public class MainActivity1 extends AppCompatActivity {
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
             root.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i+1);
+            updateProgressBarWrite(i + 1);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -76,7 +74,7 @@ public class MainActivity1 extends AppCompatActivity {
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
             restored = TreeNode.CREATOR.createFromParcel(parcel1);
-            updateProgressBarRead(i+1);
+            updateProgressBarRead(i + 1);
         }
         timeUtility.end();
 
@@ -86,6 +84,68 @@ public class MainActivity1 extends AppCompatActivity {
         Logger.logD(null, "Restored:\n" + restored.toString());
         parcel.recycle();
         parcel1.recycle();
+    }
+
+    public void testParcelableWithParcel(View view) {
+        TreeNode root = createNode(0);
+        Parcel parcel = Parcel.obtain();
+
+        timeUtility.start();
+        for (int i = 0; i < SIZE; i++) {
+            parcel.writeParcelable(root, 0);
+//            root.writeToParcel(parcel, 0);
+            updateProgressBarWrite(i + 1);
+        }
+        timeUtility.end();
+        long finish = timeUtility.getResultInMs();
+
+        int length = parcel.dataSize();
+        parcel.setDataPosition(0); // reset for reading
+        TreeNode restored = null;
+        timeUtility.start();
+        for (int i = 0; i < SIZE; i++) {
+            restored = parcel.readParcelable(TreeNode.class.getClassLoader());
+//            restored = TreeNode.CREATOR.createFromParcel(parcel);
+            updateProgressBarRead(i + 1);
+        }
+        timeUtility.end();
+
+        addResult("parcel: " + finish + "ms; unparcel: " + timeUtility.getResultInMs() + "ms; size: " + length);
+
+        Logger.logD(null, "Origin:\n" + root.toString());
+        Logger.logD(null, "Restored:\n" + (restored != null ? restored.toString() : "restored is null"));
+        parcel.recycle();
+    }
+
+    public void testSerializableWithParcel(View view) {
+        TreeNode root = createNode(0);
+        Parcel parcel = Parcel.obtain();
+
+        timeUtility.start();
+        for (int i = 0; i < SIZE; i++) {
+            parcel.writeSerializable(root);
+//            root.writeToParcel(parcel, 0);
+            updateProgressBarWrite(i + 1);
+        }
+        timeUtility.end();
+        long finish = timeUtility.getResultInMs();
+
+        int length = parcel.dataSize();
+        parcel.setDataPosition(0); // reset for reading
+        TreeNode restored = null;
+        timeUtility.start();
+        for (int i = 0; i < SIZE; i++) {
+            restored = (TreeNode) parcel.readSerializable();
+//            restored = TreeNode.CREATOR.createFromParcel(parcel);
+            updateProgressBarRead(i + 1);
+        }
+        timeUtility.end();
+
+        addResult("parcel: " + finish + "ms; unparcel: " + timeUtility.getResultInMs() + "ms; size: " + length);
+
+        Logger.logD(null, "Origin:\n" + root.toString());
+        Logger.logD(null, "Restored:\n" + (restored != null ? restored.toString() : "restored is null"));
+        parcel.recycle();
     }
 
     public void testParcelableBundle(View view) {
@@ -98,7 +158,7 @@ public class MainActivity1 extends AppCompatActivity {
 //        root.writeToParcel(parcel, 0);
         for (int i = 0; i < SIZE; i++) {
             bundle.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i+1);
+            updateProgressBarWrite(i + 1);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -114,7 +174,7 @@ public class MainActivity1 extends AppCompatActivity {
 //            bundleRestored.readFromParcel(parcel);
             bundleRestored = Bundle.CREATOR.createFromParcel(parcel);
             restored = bundleRestored.getParcelable(PARCELABLE_EXTRA);
-            updateProgressBarRead(i+1);
+            updateProgressBarRead(i + 1);
         }
 //        restored = TreeNode.CREATOR.createFromParcel(parcel1);
         timeUtility.end();
@@ -238,13 +298,11 @@ public class MainActivity1 extends AppCompatActivity {
     }
 
     private void addResult(String message) {
-        Looper.prepare();
-        new Handler().post(() -> {
-            TextView result = new TextView(this);
-            result.setText(message);
-            result.setPadding(10, 10, 10, 10);
-            results.addView(result);
-        });
+        TextView result = new TextView(this);
+        result.setText(message);
+        result.setPadding(10, 10, 10, 10);
+        results.post(() -> results.addView(result));
+//        results.addView(result);
         scroll.post(() -> scroll.scrollTo(0, scroll.getBottom()));
     }
 }

@@ -1,4 +1,7 @@
 package com.zeenko.serializablevsparcelable.models.ex1;
 
-public class MyParcelableClass {
-}
+import android.os.Parcelable;
+
+//public class MyParcelableClass implements Parcelable {
+//
+//}

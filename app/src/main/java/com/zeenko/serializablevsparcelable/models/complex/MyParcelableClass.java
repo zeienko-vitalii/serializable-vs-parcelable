@@ -28,19 +28,15 @@ public class MyParcelableClass implements Parcelable {
 
     public MyParcelableClass() {
         stringData = UUID.randomUUID().toString();
-
         stringList = new ArrayList<>();
         Random rand = new Random();
         int maxI = rand.nextInt();
-
         for (int i = 0; i < maxI % 15; i++) {
             stringList.add(UUID.randomUUID().toString());
         }
-
         identity = rand.nextInt();
         isActive = rand.nextBoolean();
         dest = rand.nextFloat();
-
     }
 
     protected MyParcelableClass(Parcel in) {

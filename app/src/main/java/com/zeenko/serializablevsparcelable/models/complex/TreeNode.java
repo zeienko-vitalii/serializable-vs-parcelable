@@ -80,7 +80,7 @@ public class TreeNode implements Serializable, Parcelable {
 //        boolean2 = in.readBoolean();
 //        int childCount = in.readInt();
 //        if (childCount > 0) {
-//            children = new ArrayList<TreeNode>(childCount);
+//            children = new ArrayList<>(childCount);
 //            for (int i = 0; i < childCount; i++) {
 //                TreeNode child = new TreeNode();
 //                child.readObject(in);
