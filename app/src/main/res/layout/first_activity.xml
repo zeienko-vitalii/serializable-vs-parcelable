@@ -10,19 +10,12 @@
         android:layout_margin="18dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:autofillHints="300" />
+        android:inputType="numberDecimal" />
 
     <Button
         android:id="@+id/btnStartSecondActivityWithParcelable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Parcelable" />
-
-    <!--<Button-->
-        <!--android:id="@+id/btnStartSecondActivityWithSerializable"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Serializable" />-->
 
 </LinearLayout>

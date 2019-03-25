@@ -9,13 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.zeenko.serializablevsparcelable.R;
-import com.zeenko.serializablevsparcelable.models.complex.MyParcelableClass;
-import com.zeenko.serializablevsparcelable.models.complex.MySerializableClass;
 import com.zeenko.serializablevsparcelable.utility.ExtraKeysGeneratorUtility;
 import com.zeenko.serializablevsparcelable.utility.TimeUtility;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.zeenko.serializablevsparcelable.utility.MemoryUtility.getFormattedBytesToString;
+import static com.zeenko.serializablevsparcelable.utility.MemoryUtility.marshallToByteArrayViaParceler;
+import static com.zeenko.serializablevsparcelable.utility.MemoryUtility.marshallToByteArrayViaSerialization;
 
 public class SecondActivity extends AppCompatActivity {
 
@@ -39,26 +42,35 @@ public class SecondActivity extends AppCompatActivity {
         TimeUtility timeUtility = new TimeUtility();
         Intent intent = getIntent();
         StringBuilder stringBuilder = new StringBuilder();
-        MySerializableClass serializableClass;
-        MyParcelableClass parcelableClass;
+        Serializable serializable;
+        Parcelable parcelable;
+
         timeUtility.start();
-        parcelableClass = intent.getParcelableExtra(FirstActivity.PARCELABLE_EXTRA);
+        parcelable = intent.getParcelableExtra(FirstActivity.PARCELABLE_EXTRA);
         timeUtility.end();
+
+        byte[] parcelizedSize = marshallToByteArrayViaParceler(parcelable);
 
         stringBuilder.append("Read Parcelable:  ")
                 .append(timeUtility.getResult())
                 .append(" ns. ")
-                .append(parcelableClass != null ? "restored" : "restored is null")
+                .append(parcelable != null ? "restored" : "restored is null")
+                .append(" Bytes: ")
+                .append(parcelizedSize != null ? getFormattedBytesToString(parcelizedSize) : " exception")
                 .append("\n");
 
         timeUtility.start();
-        serializableClass = (MySerializableClass) intent.getSerializableExtra(FirstActivity.SERIALIZABLE_EXTRA);
+        serializable = intent.getSerializableExtra(FirstActivity.SERIALIZABLE_EXTRA);
         timeUtility.end();
+
+        byte[] serialiazedSize = marshallToByteArrayViaSerialization(serializable);
 
         stringBuilder.append("Read Serializable: ")
                 .append(timeUtility.getResult())
                 .append(" ns. ")
-                .append(serializableClass != null ? "restored" : "restored is null")
+                .append(serializable != null ? "restored" : "restored is null")
+                .append(" Bytes: ")
+                .append(serialiazedSize != null ? getFormattedBytesToString(serialiazedSize) : " exception")
                 .append("\n");
 
         stringBuilder.insert(0, intent.getStringExtra(FirstActivity.TIME_EXTRA));
@@ -72,15 +84,17 @@ public class SecondActivity extends AppCompatActivity {
         TimeUtility timeUtility = new TimeUtility();
         Intent intent = getIntent();
         StringBuilder stringBuilder = new StringBuilder();
-        List<MySerializableClass> serializableClasses = new ArrayList<>();
-        List<MyParcelableClass> parcelableClasses;
+        List<Serializable> serializables = new ArrayList<>();
+        List<Parcelable> parcelables;
 
         timeUtility.start();
-        parcelableClasses = intent.getParcelableArrayListExtra(FirstActivity.PARCELABLE_EXTRA);
+        parcelables = intent.getParcelableArrayListExtra(FirstActivity.PARCELABLE_EXTRA);
         timeUtility.end();
 
+        byte[] parcelizedSize = marshallToByteArrayViaParceler(parcelables);
+
         boolean hasNullable = false;
-        for (Parcelable item : parcelableClasses) {
+        for (Parcelable item : parcelables) {
             if (item == null)
                 hasNullable = true;
         }
@@ -89,25 +103,32 @@ public class SecondActivity extends AppCompatActivity {
                 .append(timeUtility.getResult())
                 .append(" ns. ")
                 .append(!hasNullable ? "Size: " : "restored is null")
-                .append(!hasNullable ? parcelableClasses.size() : "")
+                .append(!hasNullable ? parcelables.size() : "")
+                .append(" Bytes: ")
+                .append(parcelizedSize != null ? getFormattedBytesToString(parcelizedSize) : " exception")
                 .append("\n");
 
         timeUtility.start();
         for (String key : extraKeysGeneratorUtility.getSerializableKeys()) {
-            serializableClasses.add((MySerializableClass) intent.getSerializableExtra(key));
+            serializables.add(intent.getSerializableExtra(key));
         }
         timeUtility.end();
 
         hasNullable = false;
-        for (MySerializableClass item : serializableClasses) {
+        for (Serializable item : serializables) {
             if (item == null)
                 hasNullable = true;
         }
+
+        byte[] serialiazedSize = marshallToByteArrayViaSerialization(serializables);
+
         stringBuilder.append("Read Serializable: ")
                 .append(timeUtility.getResult())
                 .append(" ns. ")
                 .append(!hasNullable ? "Size: " : "restored is null")
-                .append(!hasNullable ? serializableClasses.size() : "")
+                .append(!hasNullable ? serializables.size() : "")
+                .append(" Bytes: ")
+                .append(serialiazedSize != null ? getFormattedBytesToString(serialiazedSize) : " exception")
                 .append("\n");
 
 //        stringBuilder.append("\n")

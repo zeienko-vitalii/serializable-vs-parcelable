@@ -56,25 +56,11 @@
         android:onClick="clear"
         android:text="Clear" />
 
-    <ProgressBar
-        android:id="@+id/pbProgressWrite"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/clear" />
-
-    <ProgressBar
-        android:id="@+id/pbProgressRead"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/pbProgressWrite" />
-
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/pbProgressRead"
+        android:layout_below="@id/clear"
         android:fillViewport="true"
         android:padding="12dp">
 

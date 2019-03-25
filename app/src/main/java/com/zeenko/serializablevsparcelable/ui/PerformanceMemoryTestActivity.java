@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -30,8 +29,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
     private LinearLayout results;
     private ScrollView scroll;
     private TimeUtility timeUtility = new TimeUtility();
-    private ProgressBar progressBarWrite;
-    private ProgressBar progressBarRead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +45,7 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
             try {
                 SIZE = Integer.parseInt(edSize.getText().toString());
                 nodesDepth = Integer.parseInt(edNodes.getText().toString());
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             testParcelable(view);
         }).start());
@@ -57,14 +54,10 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
             try {
                 SIZE = Integer.parseInt(edSize.getText().toString());
                 nodesDepth = Integer.parseInt(edNodes.getText().toString());
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             testSerializable(view);
         }).start());
-        progressBarWrite = findViewById(R.id.pbProgressWrite);
-        progressBarRead = findViewById(R.id.pbProgressRead);
-        progressBarWrite.setMax(SIZE);
-        progressBarRead.setMax(SIZE);
     }
 
 
@@ -75,7 +68,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
             root.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i + 1);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -86,14 +78,13 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
             restored = TreeNode.CREATOR.createFromParcel(parcel);
-            updateProgressBarRead(i + 1);
         }
         timeUtility.end();
 
         addResult("parcel: " + finish + "ms; unparcel: " + timeUtility.getResultInMs() + "ms; size: " + length);
 
         Logger.logD(null, "Origin:\n" + root.toString());
-        Logger.logD(null, "Restored:\n" + restored.toString());
+        Logger.logD(null, restored != null ? "Restored:\n" + restored.toString() : "restored is null");
         parcel.recycle();
     }
 
@@ -107,7 +98,7 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
             timeUtility.start();
             for (int i = 0; i < SIZE; i++) {
                 out.writeObject(root);
-                updateProgressBarWrite(i + 1);
+
             }
             timeUtility.end();
             byteArray = bas.toByteArray();
@@ -124,7 +115,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
             timeUtility.start();
             for (int i = 0; i < SIZE; i++) {
                 restored = (TreeNode) in.readObject();
-                updateProgressBarRead(i + 1);
             }
             timeUtility.end();
         } catch (Exception e) {
@@ -136,9 +126,7 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
 
         Logger.logD(null, "Origin:\n" + root.toString());
         Logger.logD(null, restored != null ? "Restored:\n" + restored.toString() : "restored is null");
-
     }
-
 
     public void testParcelableWithParcel(View view) {
         TreeNode root = createNode(0);
@@ -148,7 +136,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         for (int i = 0; i < SIZE; i++) {
             parcel.writeParcelable(root, 0);
 //            root.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i + 1);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -160,7 +147,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         for (int i = 0; i < SIZE; i++) {
             restored = parcel.readParcelable(TreeNode.class.getClassLoader());
 //            restored = TreeNode.CREATOR.createFromParcel(parcel);
-            updateProgressBarRead(i + 1);
         }
         timeUtility.end();
 
@@ -179,7 +165,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         for (int i = 0; i < SIZE; i++) {
             parcel.writeSerializable(root);
 //            root.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i + 1);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -191,7 +176,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         for (int i = 0; i < SIZE; i++) {
             restored = (TreeNode) parcel.readSerializable();
 //            restored = TreeNode.CREATOR.createFromParcel(parcel);
-            updateProgressBarRead(i + 1);
         }
         timeUtility.end();
 
@@ -212,7 +196,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
 //        root.writeToParcel(parcel, 0);
         for (int i = 0; i < SIZE; i++) {
             bundle.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i + 1);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -221,14 +204,13 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         parcel.setDataPosition(0); // reset for reading
         TreeNode restored = null;
 //        Parcel parcel1 = Parcel.obtain();
-        Bundle bundleRestored = new Bundle();
+        Bundle bundleRestored;
         timeUtility.start();
         for (int i = 0; i < SIZE; i++) {
 //            bundle.readFromParcel(parcel1);
 //            bundleRestored.readFromParcel(parcel);
             bundleRestored = Bundle.CREATOR.createFromParcel(parcel);
             restored = bundleRestored.getParcelable(PARCELABLE_EXTRA);
-            updateProgressBarRead(i + 1);
         }
 //        restored = TreeNode.CREATOR.createFromParcel(parcel1);
         timeUtility.end();
@@ -251,7 +233,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
 //        root.writeToParcel(parcel, 0);
         for (int i = 0; i < SIZE; i++) {
             bundle.writeToParcel(parcel, 0);
-            updateProgressBarWrite(i);
         }
         timeUtility.end();
         long finish = timeUtility.getResultInMs();
@@ -266,7 +247,7 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
 //            bundle.readFromParcel(parcel1);
             bundleRestored = Bundle.CREATOR.createFromParcel(parcel);
             restored = bundleRestored.getParcelable(SERIALIZABLE_EXTRA);
-            updateProgressBarRead(i);
+
         }
 //        restored = TreeNode.CREATOR.createFromParcel(parcel1);
         timeUtility.end();
@@ -323,14 +304,6 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         result.setPadding(10, 10, 10, 10);
         results.post(() -> results.addView(result));
         scroll.post(() -> scroll.scrollTo(0, scroll.getBottom()));
-    }
-
-    private void updateProgressBarWrite(int value) {
-        progressBarWrite.post(() -> progressBarWrite.setProgress(value));
-    }
-
-    private void updateProgressBarRead(int value) {
-        progressBarRead.post(() -> progressBarRead.setProgress(value));
     }
 
 }

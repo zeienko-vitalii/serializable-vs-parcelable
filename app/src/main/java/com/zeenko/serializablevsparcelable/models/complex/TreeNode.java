@@ -47,47 +47,47 @@ public class TreeNode implements Serializable, Parcelable {
         boolean1 = in.readByte() != 0x00;
         boolean2 = in.readByte() != 0x00;
     }
-//
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.writeUTF(string0);
-//        out.writeUTF(string1);
-//        out.writeUTF(string2);
-//        out.writeInt(int0);
-//        out.writeInt(int1);
-//        out.writeInt(int2);
-//        out.writeBoolean(boolean0);
-//        out.writeBoolean(boolean1);
-//        out.writeBoolean(boolean2);
-//        if (children != null) {
-//            out.writeInt(children.size());
-//            for (TreeNode child : children) {
-//                child.writeObject(out);
-//            }
-//        } else {
-//            out.writeInt(0);
-//        }
-//    }
-//
-//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        string0 = in.readUTF();
-//        string1 = in.readUTF();
-//        string2 = in.readUTF();
-//        int0 = in.readInt();
-//        int1 = in.readInt();
-//        int2 = in.readInt();
-//        boolean0 = in.readBoolean();
-//        boolean1 = in.readBoolean();
-//        boolean2 = in.readBoolean();
-//        int childCount = in.readInt();
-//        if (childCount > 0) {
-//            children = new ArrayList<>(childCount);
-//            for (int i = 0; i < childCount; i++) {
-//                TreeNode child = new TreeNode();
-//                child.readObject(in);
-//                children.add(child);
-//            }
-//        }
-//    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeUTF(string0);
+        out.writeUTF(string1);
+        out.writeUTF(string2);
+        out.writeInt(int0);
+        out.writeInt(int1);
+        out.writeInt(int2);
+        out.writeBoolean(boolean0);
+        out.writeBoolean(boolean1);
+        out.writeBoolean(boolean2);
+        if (children != null) {
+            out.writeInt(children.size());
+            for (TreeNode child : children) {
+                child.writeObject(out);
+            }
+        } else {
+            out.writeInt(0);
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        string0 = in.readUTF();
+        string1 = in.readUTF();
+        string2 = in.readUTF();
+        int0 = in.readInt();
+        int1 = in.readInt();
+        int2 = in.readInt();
+        boolean0 = in.readBoolean();
+        boolean1 = in.readBoolean();
+        boolean2 = in.readBoolean();
+        int childCount = in.readInt();
+        if (childCount > 0) {
+            children = new ArrayList<>(childCount);
+            for (int i = 0; i < childCount; i++) {
+                TreeNode child = new TreeNode();
+                child.readObject(in);
+                children.add(child);
+            }
+        }
+    }
 
     @Override
     public int describeContents() {
