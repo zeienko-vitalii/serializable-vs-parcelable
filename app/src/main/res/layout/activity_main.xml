@@ -2,31 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnOldTest"
-        android:layout_width="wrap_content"
+    <com.zeenko.serializablevsparcelable.ui.view.CustomView
+        android:id="@+id/reveal_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1" />
+        android:visibility="gone"
+        app:showMessage="true" />
 
-    <Button
-        android:id="@+id/btnPerformanceMemoryTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2" />
+    <!--<Button-->
+        <!--android:id="@+id/btnOldTest"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/rounded"-->
+        <!--android:text="1" />-->
 
-    <Button
-        android:id="@+id/btnTransferTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="3" />
+    <!--<Button-->
+        <!--android:id="@+id/btnPerformanceMemoryTest"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="2" />-->
 
-    <Button
-        android:id="@+id/btnParcelableTestActivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="4" />
+    <!--<Button-->
+        <!--android:id="@+id/btnTransferTest"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="3" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btnParcelableTestActivity"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="4" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btnDialog"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Dialog" />-->
 
 </LinearLayout>
