@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.zeenko.serializablevsparcelable.R;
 import com.zeenko.serializablevsparcelable.models.complex.MyParcelableClass;
@@ -18,13 +18,20 @@ import com.zeenko.serializablevsparcelable.utility.ExtraKeysGeneratorUtility;
 import com.zeenko.serializablevsparcelable.utility.Logger;
 import com.zeenko.serializablevsparcelable.utility.TimeUtility;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.zeenko.serializablevsparcelable.utility.MemoryUtility.getFormattedBytesToString;
+import static com.zeenko.serializablevsparcelable.utility.MemoryUtility.marshallToByteArrayViaParceler;
+import static com.zeenko.serializablevsparcelable.utility.MemoryUtility.marshallToByteArrayViaSerialization;
+
 public class OldTestActivity extends AppCompatActivity {
 
     public static final String PARCELABLE_EXTRA = "PARCELABLE_EXTRA";
     public static final String SERIALIZABLE_EXTRA = "SERIALIZABLE_EXTRA";
     MyService service;
     boolean isBound = false;
-    private TextView tvMessage;
 
     /**
      * Defines callbacks for service binding, passed to bindService()
@@ -50,11 +57,23 @@ public class OldTestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.old_test_activity);
-        tvMessage = findViewById(R.id.tvMessage);
-    }
 
-    private void updateMessageInMainThread(String msg) {
-        tvMessage.setText(msg);
+        EditText numberPicker = findViewById(R.id.numberPicked);
+        findViewById(R.id.Start).setOnClickListener(
+                (view) -> {
+                    int size = Integer.parseInt(numberPicker.getText().toString());
+                    if (size > 1) {
+                        ExtraKeysGeneratorUtility.SIZE = size;
+                        if (isBound) {
+                            new Thread(() -> service.readArrayFromBundle(writeArraysToBundle())).start();
+                        }
+                    } else if (size == 1) {
+                        if (isBound) {
+                            new Thread(() -> service.readFromBundle(writeToBundle())).start();
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -70,22 +89,6 @@ public class OldTestActivity extends AppCompatActivity {
         super.onStop();
         unbindService(connection);
         isBound = false;
-    }
-
-    /**
-     * Called when a button is clicked (the button in the layout file attaches to
-     * this method with the android:onClick attribute)
-     */
-    public void onButtonClick(View v) {
-        if (isBound) {
-            // Call a method from the LocalService.
-            // However, if this call were something that might hang, then this request should
-            // occur in a separate thread to avoid slowing down the activity performance.
-            int num = service.getRandomNumber();
-            updateMessageInMainThread("number: " + num);
-//            new Thread(() -> service.readFromIntent(writeToIntent())).start();
-            new Thread(() -> service.readFromBundle(writeToBundle())).start();
-        }
     }
 
     private Intent writeToIntent() {
@@ -127,26 +130,64 @@ public class OldTestActivity extends AppCompatActivity {
 
     private Bundle writeToBundle() {
         Bundle bundle = new Bundle();
-
-        MyParcelableClass myParcelableClass = new MyParcelableClass();
-        MySerializableClass mySerializableClass = new MySerializableClass();
-        ExtraKeysGeneratorUtility extraKeysGeneratorUtility = new ExtraKeysGeneratorUtility();
+        Parcelable parcelable = new MyParcelableClass();
+        Serializable serializable = new MySerializableClass();
         TimeUtility timeUtility = new TimeUtility();
         timeUtility.start();
-        for (String key : extraKeysGeneratorUtility.getParcelableKeys()) {
-            bundle.putParcelable(key, myParcelableClass);
-        }
+        bundle.putParcelable(PARCELABLE_EXTRA, parcelable);
         timeUtility.end();
-        Logger.logD("[bundle]", "1. Time Parcelable write to Bundle: " + timeUtility.getResultInMs() + " ms");
+        byte[] parceledSize = marshallToByteArrayViaParceler(parcelable);
+
+        Logger.logD("[bundle]", "1. Write Parcelable: " + timeUtility.getResult() + " ns. Bytes: " + getFormattedBytesToString(parceledSize));
         timeUtility.start();
-        for (String key : extraKeysGeneratorUtility.getSerializableKeys()) {
-            bundle.putSerializable(key, mySerializableClass);
-        }
+        bundle.putSerializable(SERIALIZABLE_EXTRA, serializable);
         timeUtility.end();
-        Logger.logD("[bundle]", "2. Time Serializable write: " + timeUtility.getResultInMs() + " ms");
+
+        byte[] serializedSize = marshallToByteArrayViaSerialization(serializable);
+        Logger.logD("[bundle]", "2. Write Serializable: " + timeUtility.getResult() + " ns. Bytes: " + getFormattedBytesToString(serializedSize));
 
         return bundle;
     }
 
+    private Bundle writeArraysToBundle() {
+        Bundle bundle = new Bundle();
+        ArrayList<Parcelable> parcelables = (ArrayList<Parcelable>) getParcelableArray();
+        List<Serializable> serializables = getSerializableArray();
+        ExtraKeysGeneratorUtility extraKeysGeneratorUtility = new ExtraKeysGeneratorUtility();
+        TimeUtility timeUtility = new TimeUtility();
+        timeUtility.start();
+        bundle.putParcelableArrayList(PARCELABLE_EXTRA, parcelables);
+        timeUtility.end();
+        byte[] parceledSize = marshallToByteArrayViaParceler(parcelables);
+        Logger.logD("[bundle]", "1. Write Parcelable: " + timeUtility.getResult() + " ns. Bytes: " + getFormattedBytesToString(parceledSize));
+        int index = 0;
+        timeUtility.start();
+        for (String key : extraKeysGeneratorUtility.getSerializableKeys()) {
+            bundle.putSerializable(key, serializables.get(index));
+            index++;
+        }
+        timeUtility.end();
+
+        byte[] serializedSize = marshallToByteArrayViaSerialization(serializables);
+        Logger.logD("[bundle]", "2. Write Serializable: " + timeUtility.getResult() + " ns. Bytes: " + getFormattedBytesToString(serializedSize));
+
+        return bundle;
+    }
+
+    private List<Parcelable> getParcelableArray() {
+        List<Parcelable> data = new ArrayList<>(ExtraKeysGeneratorUtility.SIZE);
+        for (int i = 0; i < ExtraKeysGeneratorUtility.SIZE; i++) {
+            data.add(new MyParcelableClass());
+        }
+        return data;
+    }
+
+    private List<Serializable> getSerializableArray() {
+        List<Serializable> data = new ArrayList<>(ExtraKeysGeneratorUtility.SIZE);
+        for (int i = 0; i < ExtraKeysGeneratorUtility.SIZE; i++) {
+            data.add(new MySerializableClass());
+        }
+        return data;
+    }
 
 }

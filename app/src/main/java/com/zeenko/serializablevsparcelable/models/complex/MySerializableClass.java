@@ -30,34 +30,34 @@ public class MySerializableClass implements Serializable {
         dest = rand.nextFloat();
     }
 
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.writeUTF(stringData);
-//        out.writeInt(identity);
-//        out.writeBoolean(isActive);
-//        out.writeFloat(dest);
-//        if (stringList != null) {
-//            out.writeInt(stringList.size());
-//            for (String child : stringList) {
-//                out.writeUTF(child);
-//            }
-//        } else {
-//            out.writeInt(0);
-//        }
-//    }
-//
-//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        stringData = in.readUTF();
-//        identity = in.readInt();
-//        isActive = in.readBoolean();
-//        dest = in.readFloat();
-//        int childCount = in.readInt();
-//        if (childCount > 0) {
-//            stringList = new ArrayList<>(childCount);
-//            for (int i = 0; i < childCount; i++) {
-//                stringList.add(in.readUTF());
-//            }
-//        }
-//    }
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeUTF(stringData);
+        out.writeInt(identity);
+        out.writeBoolean(isActive);
+        out.writeFloat(dest);
+        if (stringList != null) {
+            out.writeInt(stringList.size());
+            for (String child : stringList) {
+                out.writeUTF(child);
+            }
+        } else {
+            out.writeInt(0);
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        stringData = in.readUTF();
+        identity = in.readInt();
+        isActive = in.readBoolean();
+        dest = in.readFloat();
+        int childCount = in.readInt();
+        if (childCount > 0) {
+            stringList = new ArrayList<>(childCount);
+            for (int i = 0; i < childCount; i++) {
+                stringList.add(in.readUTF());
+            }
+        }
+    }
 
     @Override
     public String toString() {

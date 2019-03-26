@@ -11,26 +11,44 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-//        testSerialization();
-//        testArraySerialization();
-//        testSerializationParcelable();
         testSerializationOfSimple();
+    }
+
+    private static void testSerializationOfSimple() {
+        String filename = "file.out";
+        MyClass origin = new MyClass();
+
+        // Serialization
+        try (FileOutputStream file = new FileOutputStream(filename);
+             ObjectOutputStream out = new ObjectOutputStream(file)
+        ) {
+            out.writeObject(origin); // Saving of object in a file
+            show("Object has been serialized\nObject: " + origin.toString());
+        } catch (IOException ex) {
+            show("IOException is caught" + ex);
+        }
+        MyClass restored;
+
+        // Deserialization
+        try ( // Reading the object from a file
+              FileInputStream file = new FileInputStream(filename);
+              ObjectInputStream in = new ObjectInputStream(file)) {
+            restored = (MyClass) in.readObject(); // Method for deserialization of object
+            show("Object has been deserialized\nObject: " + restored.toString());
+        } catch (IOException ex) {
+            show("IOException is caught" + ex);
+        } catch (ClassNotFoundException ex) {
+            show("ClassNotFoundException is caught" + ex);
+        }
     }
 
     private static void show(String msg) {
         System.out.println(msg != null ? msg : "Message is empty");
     }
+
 
     private static void testSerialization() {
         String filename = "file.ser";
@@ -71,34 +89,6 @@ public class Main {
             show("IOException is caught" + ex);
         } catch (ClassNotFoundException ex) {
             show("ClassNotFoundException is caught");
-        }
-    }
-
-    private static void testSerializationOfSimple() {
-        String filename = "file.out";
-        MyClass object = new MyClass();
-
-        // Serialization
-        try (FileOutputStream file = new FileOutputStream(filename);
-             ObjectOutputStream out = new ObjectOutputStream(file)
-        ) {
-            out.writeObject(object); // Saving of object in a file
-            show("Object has been serialized\nObject: " + object.toString());
-        } catch (IOException ex) {
-            show("IOException is caught" + ex);
-        }
-        MyClass object1;
-
-        // Deserialization
-        try ( // Reading the object from a file
-              FileInputStream file = new FileInputStream(filename);
-              ObjectInputStream in = new ObjectInputStream(file)) {
-            object1 = (MyClass) in.readObject(); // Method for deserialization of object
-            show("Object has been deserialized\nObject: " + object1.toString());
-        } catch (IOException ex) {
-            show("IOException is caught" + ex);
-        } catch (ClassNotFoundException ex) {
-            show("ClassNotFoundException is caught" + ex);
         }
     }
 

@@ -93,12 +93,11 @@ public class PerformanceMemoryTestActivity extends AppCompatActivity {
         TreeNode root = createNode(nodesDepth);
         byte[] byteArray = new byte[0];
 
-        try (ByteArrayOutputStream bas = new ByteArrayOutputStream(1_000_000);
+        try (ByteArrayOutputStream bas = new ByteArrayOutputStream();
              ObjectOutputStream out = new ObjectOutputStream(bas)) {
             timeUtility.start();
             for (int i = 0; i < SIZE; i++) {
                 out.writeObject(root);
-
             }
             timeUtility.end();
             byteArray = bas.toByteArray();
